@@ -17,6 +17,9 @@ server = discord.Object(id=872557561172348978)
 log_channel_id = 1161996311017553920
 log_channel = None
 
+tz_tbilisi = pytz.timezone('Asia/Tbilisi')
+now_tbilisi = datetime.now(tz_tbilisi) 
+
 port = 5500   # ikas hosti - 1203 ||| local hosti - 5500
 
 load_dotenv()
@@ -27,19 +30,11 @@ app = Flask(__name__)
 def download_file(filename):
     return send_from_directory('upload/files', filename)
 
-async def real_logger(interaction):
+async def best_logger_eune(interaction):
     log_channel = discord.utils.get(client.get_all_channels(), id=log_channel_id)
 
-    if log_channel:
-        tz_tbilisi = pytz.timezone('Asia/Tbilisi')
-        now_tbilisi = datetime.now(tz_tbilisi)        
-
-        embed=discord.Embed(title="Command Executed", color=0x0040ff)
-        embed.add_field(name="Command", value=f"{interaction.data['name']}", inline=False)
-        embed.add_field(name="Author", value=f"{interaction.user.display_name} ({interaction.user})", inline=True)
-        embed.set_footer(text=f"{now_tbilisi.strftime('%H:%M:%S ||| %d/%m/%Y')}")
-
-        await log_channel.send(embed=embed)
+    if log_channel:    
+        await log_channel.send(f"`{now_tbilisi.strftime('%H:%M:%S ||| %H:%M:%S')}` ==> **{interaction.user.display_name} ({interaction.user})** used **{interaction.data['name']}**")
     else:
         print('Log channel not found.')
 
@@ -56,7 +51,7 @@ async def on_ready():
 
         log_channel = discord.utils.get(client.get_all_channels(), id=log_channel_id)
         if log_channel:
-            await log_channel.send(":white_check_mark: **გული მიცემს**")
+            await log_channel.send(f"`{now_tbilisi.strftime('%H:%M:%S ||| %d/%m/%Y')}` ==> :white_check_mark: გული მიცემს!")
         else:
             logger.error("Log channel not found. Check the channel ID.")
 
@@ -84,7 +79,7 @@ async def help(interaction):
 
     await interaction.response.send_message(embed=embed)
     
-    await real_logger(interaction)
+    await best_logger_eune(interaction)
 
 
 @tree.command(name = "denisa", description = "informacia denisaze", guild=server)
@@ -92,7 +87,7 @@ async def denisa(interaction):
     embed=discord.Embed(title='denisas dedas shevecit me da bichebma', description="denisas dedasheveci movutkan dedismutlei magis kargi movtkan magis pirshi sheveci magis kargi movtkan magis dedsheveci magis gamcheni movtkan magis dzmis deda movtkan magis dzmis dzmis deda movtkan magis dedis qmris coli movtkan magis momavali qmris imitoro pedarastia kidev qmris deda movvtkan magis pirshi sheveci magis pirshi chavarwkie magis deda gavaqirave magis mamas kle movacheri da dedamis vachame magis babu gavatxove magis kargis trak movtkan da movutkan shvilebi magis karg mvotkan denisas mamas movutkan shvilebi da mkvdari shvili da denisas dzma romelic aseve mkvdaria magati kargic movtkan magati pirshi sheveci da im xes venacvale davpatije sadilze romelmac denisas dzma sheiwira chemi kai nikalai denisas mama gavafrine amerikashi LOL" , color=0xff0000)
     await interaction.response.send_message(embed=embed)
     
-    await real_logger(interaction)
+    await best_logger_eune(interaction)
 
 
 @tree.command(name = "zuka", description = "informacia zukaze", guild=server)
@@ -101,7 +96,7 @@ async def zuka(interaction):
     embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/872561369801711676/955908622938959882/F13ADD6C-BF59-4C58-B74E-ABEBC7BC3D86.png")
     await interaction.response.send_message(embed=embed)
     
-    await real_logger(interaction)
+    await best_logger_eune(interaction)
 
 
 @tree.command(name = "ikushaa", description = "informacia ikushaze", guild=server)
@@ -110,7 +105,7 @@ async def ikusha(interaction):
     embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/872561369801711676/893997973569171496/image0.jpg")
     await interaction.response.send_message(embed=embed)
     
-    await real_logger(interaction)
+    await best_logger_eune(interaction)
 
 
 @tree.command(name = "begi", description = "informacia begize", guild=server)
@@ -119,7 +114,7 @@ async def begi(interaction):
     embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/872561369801711676/1159263728659861534/BEGIMAN.jpeg?ex=6530637a&is=651dee7a&hm=d6a31de6fd0cc670ac4df9bad73b0b6449dade832b6179f54d703d343b376431&")
     await interaction.response.send_message(embed=embed)
     
-    await real_logger(interaction)
+    await best_logger_eune(interaction)
 
 
 @tree.command(name = "mine", description="mine predictor", guild=server)
@@ -188,7 +183,7 @@ async def mine(interaction):
 
     await interaction.response.send_message(row1 + "\n" + row2 + "\n" + row3 + "\n" + row4 +"\n" + row5 + "\n" + "**Accuracy (totally not fake)**" + "\n" + info +"%")
 
-    await real_logger(interaction)
+    await best_logger_eune(interaction)
 
 
 @tree.command(name="time", description="time left till the new day", guild=server)
@@ -203,7 +198,7 @@ async def time(interaction):
     
     await interaction.response.send_message(f"ახალ დღემდე დარჩენილი დრო: `{hours}` **საათი**, `{minutes}` **წუთი**, `{seconds}` **წამი**..")
 
-    await real_logger(interaction)
+    await best_logger_eune(interaction)
 
 
 @tree.command(name = "ping", description="pong!", guild=server)
@@ -211,14 +206,14 @@ async def ping(interaction):
     await interaction.response.send_message(f"""```css
 Ping: {round(client.latency * 1000)}ms```""")
 
-    await real_logger(interaction)
+    await best_logger_eune(interaction)
 
 
 @tree.context_menu(guild=server)
 async def Get_ID(interaction: discord.Interaction, member: discord.Member):
     await interaction.response.send_message(f'{member.display_name}\'s ID: {member.id} ', ephemeral=True)
 
-    await real_logger(interaction)
+    await best_logger_eune(interaction)
 
 
 @tree.command(name="upload", description="ატვირთე ფაილი და გაუზიარე სხვებს ლინკით", guild=server)
@@ -226,7 +221,7 @@ async def Get_ID(interaction: discord.Interaction, member: discord.Member):
 async def upload_func(interaction: discord.Interaction, attachment: discord.Attachment):
     await upload(interaction, attachment)
 
-    await real_logger(interaction)
+    await best_logger_eune(interaction)
 
 
 # CURRENCY
@@ -235,20 +230,20 @@ async def upload_func(interaction: discord.Interaction, attachment: discord.Atta
 async def gambling_command(interaction):
     await gambling_help(interaction)
 
-    await real_logger(interaction)
+    await best_logger_eune(interaction)
 
 @tree.command(name="bal", description="შენი ბალანსის შემოწმება", guild=server)
 async def bal_command(interaction):
     await check_balance(interaction)
 
-    await real_logger(interaction)
+    await best_logger_eune(interaction)
 
 
 @tree.command(name="give", description="ფულის სხვა მომხმარებლისთვის მიცემა", guild=server)
 async def give_command(interaction, user: discord.User, amount: int):
     await give_coins(interaction, user, amount)
 
-    await real_logger(interaction)
+    await best_logger_eune(interaction)
 
 
 @tree.command(name="coinflip", description="მონეტის აგდება", guild=server)
@@ -259,7 +254,36 @@ async def give_command(interaction, user: discord.User, amount: int):
 async def coin_command(interaction, choice: app_commands.Choice[str], amount: int):
     await coin_flip(interaction, choice, amount)
 
-    await real_logger(interaction)
+    await best_logger_eune(interaction)
+
+
+case_choices = {
+    "STREAMER": "STREAMER",
+    "GAMER": "GAMER",
+    "SCIENTIST": "SCIENTIST",
+    "EXPLORER": "EXPLORER",
+    "ARTIST": "ARTIST",
+    "CHEF": "CHEF",
+    "ARTIST": "ARTIST",
+    "DETECTIVE": "DETECTIVE",
+    "WRITER": "WRITER",
+    "PSYCHOLOGIST": "PSYCHOLOGIST",
+}
+@tree.command(name="open", description="სკივრის გახსნა", guild=server)
+@app_commands.choices(case_choice=[app_commands.Choice(name=name, value=value) for name, value in case_choices.items()])
+async def case_opening(interaction, case_choice: app_commands.Choice[str]):
+    await open_case(interaction, case_choice)
+
+    await best_logger_eune(interaction)
+
+
+@tree.command(name="cases", description="ხელმისაწვდომი სკივრები თავიანთი ნივთებით და მათი ფასებით", guild=server)
+async def cases_command(interaction):
+    await case_list(interaction)
+
+    await best_logger_eune(interaction)
+
+
 
 
 # @tree.command(name="daily", description="დღიური პრიზი", guild=server)

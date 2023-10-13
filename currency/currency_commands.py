@@ -1,6 +1,13 @@
-import random, discord
+import random, discord, logging, coloredlogs, json
 from currency.db_funcs import *
 
+logger = logging.getLogger("commands")
+coloredlogs.install(level='DEBUG', fmt='%(asctime)s  |  %(message)s')
+
+file_path = 'E:\@programireba\dc botebi\__KURISUTINA.py\currency\\cases.json'
+
+with open(file_path, 'r', encoding='utf-8') as file:
+    case_choices = json.load(file)
 
 async def gambling_help(interaction):
     user_id = interaction.user.id
@@ -12,9 +19,10 @@ async def gambling_help(interaction):
     embed.add_field(name="/bal", value="შენი ბალანსის შემოწმება", inline=True)
     embed.add_field(name="/give", value="ფულის სხვა მომხმარებლისთვის მიცემა", inline=True)
     embed.add_field(name="/coinflip", value="მონეტის აგდება 2x პრიზის მოსაგებად", inline=True)
+    embed.add_field(name="/cases", value="ხელმისაწვდომი სკივრები თავიანთი ნივთებით და მათი ფასებით", inline=True)
+    embed.add_field(name="/open", value="სკივრის გახსნა", inline=True)
 
     await interaction.response.send_message(embed=embed)
-    
 
 
 async def check_balance(interaction):
@@ -58,7 +66,6 @@ async def give_coins(interaction, user: discord.User, amount):
             await interaction.response.send_message(embed=embed)
 
 
-
 async def coin_flip(interaction, choice, amount):
     user_id = interaction.user.id
     definition(user_id)
@@ -89,6 +96,85 @@ async def coin_flip(interaction, choice, amount):
     else:
         embed = discord.Embed(title="შენ არ გაქვს საკმარისი ბალანსი ამ ოპერაციის შესასრულებლად.", color=0xff0000)
         await interaction.response.send_message(embed=embed)
+
+
+async def case_list(interaction):
+    user_id = interaction.user.id
+    definition(user_id)
+    description = "ხელმისაწვდომი სკივრები თავიანთი ნივთებით:\n\n"
+
+    for case_name, case_info in case_choices.items():
+        description += f"**{case_info['name']}** -> {case_info['cost']} ₾\n"
+        description += "ნივთები:\n"
+
+        for item, value in case_info['items'].items():
+            description += f"- **{item}**: {value} ₾\n"
+
+        description += "\n"
+
+    embed = discord.Embed(
+        title="სკივრები და ნივთები",
+        description=description,
+        color=0xffffff
+    )
+
+    await interaction.response.send_message(embed=embed)
+
+
+async def open_case(interaction, case_choice):
+    user_id = interaction.user.id
+    definition(user_id)
+    case_choice_str = case_choice.value
+
+    if case_choice_str not in case_choices:
+        embed = discord.Embed(title="არასწორი არჩევანი, ცადე ხელახლა", color=0xff0000)
+        await interaction.response.send_message(embed=embed)
+        return
+
+    if get_balance(user_id) < case_choices[case_choice_str]["cost"]:
+        embed = discord.Embed(title="შენ არ გაქვს საკმარისი ბალანსი ამ ოპერაციის შესასრულებლად.", color=0xff0000)
+        await interaction.response.send_message(embed=embed)
+        return
+
+    current_balance = get_balance(user_id)
+    new_balance = current_balance - case_choices[case_choice_str]["cost"]
+    update_balance(user_id, new_balance)
+
+    items = list(case_choices[case_choice_str]["items"].keys())
+    weights = list(case_choices[case_choice_str]["items"].values())
+
+    # shansebis gansazgvra
+    probability_positive = 0.35  # dadebiti values mqone itemis dagdebis shansi (1 == 100%)
+    probability_negative = 1 - probability_positive
+
+    # weights cvlis shansebis mixedvit
+    total_positive_weights = sum(w for w in weights if w > 0)
+    total_negative_weights = sum(w for w in weights if w < 0)
+
+    for i, item_value in enumerate(case_choices[case_choice_str]["items"].values()):
+        if item_value > 0:
+            weights[i] *= (probability_positive / total_positive_weights)
+        else:
+            weights[i] *= (probability_negative / total_negative_weights)
+
+    # irchevs random items weightis mixedvit
+    item = random.choices(items, weights=weights, k=1)[0]
+    item_value = case_choices[case_choice_str]["items"][item]
+    new_balance += item_value
+    update_balance(user_id, new_balance)
+
+    if item_value >= 0:
+        embed_color = 0x00ff00  # mwvane dadebitze
+    else:
+        embed_color = 0xff0000  # witeli uaryofitze
+
+    embed = discord.Embed(title="სკივრი  <:chest:1162333484409434162>  ნივთი", color=embed_color)
+    embed.add_field(name=case_choices[case_choice_str]['name'], value=f"{case_choices[case_choice_str]['cost']} ₾", inline=True)
+    embed.add_field(name=item, value=f"{item_value} ₾", inline=True)
+    embed.set_footer(text=f"შენი ახალი ბალანსი: {new_balance} ₾")
+
+    await interaction.response.send_message(embed=embed)
+
 
 
 

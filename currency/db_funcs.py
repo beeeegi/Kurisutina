@@ -33,11 +33,11 @@ def definition(user_id):
     conn, cursor = create_connection()
     balance = 1000
 
-    # amowmebs aris tu ara useri dbshi
+    # checks if the user exists in db
     cursor.execute("SELECT * FROM balances WHERE user_id = ?", (user_id,))
-    if cursor.fetchone() is not None: #tu ar aris
-        return #idi naxuis gveubneba
+    if cursor.fetchone() is not None: #if yes
+        return #returns
 
-    # tu aris adzlevs shesabamis balanss shesabamis users dbshi
+    # if yes defines user in db
     cursor.execute("INSERT INTO balances (user_id, balance) VALUES (?, ?)", (user_id, balance))
     close_connection(conn)
