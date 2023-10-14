@@ -1,0 +1,1 @@
+UPDATE balances SET balance = 1000000;

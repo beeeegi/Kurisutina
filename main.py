@@ -34,7 +34,7 @@ async def best_logger_eune(interaction):
     log_channel = discord.utils.get(client.get_all_channels(), id=log_channel_id)
 
     if log_channel:    
-        await log_channel.send(f"`{now_tbilisi.strftime('%H:%M:%S ||| %H:%M:%S')}` ==> **{interaction.user.display_name} ({interaction.user})** used **{interaction.data['name']}**")
+        await log_channel.send(f"`{now_tbilisi.strftime('%d/%m/%Y ||| %H:%M:%S')}` ==> **{interaction.user.display_name} ({interaction.user})** used **{interaction.data['name']}**")
     else:
         print('Log channel not found.')
 
@@ -51,7 +51,7 @@ async def on_ready():
 
         log_channel = discord.utils.get(client.get_all_channels(), id=log_channel_id)
         if log_channel:
-            await log_channel.send(f"`{now_tbilisi.strftime('%H:%M:%S ||| %d/%m/%Y')}` ==> :white_check_mark: გული მიცემს!")
+            await log_channel.send(f"`{now_tbilisi.strftime('%d/%m/%Y ||| %H:%M:%S')}` ==> :white_check_mark: გული მიცემს!")
         else:
             logger.error("Log channel not found. Check the channel ID.")
 

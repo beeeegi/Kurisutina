@@ -76,7 +76,7 @@ async def coin_flip(interaction, choice, amount):
         coin_result = random.choice(["Heads", "Tails"])
 
         if choice.value == coin_result:
-            winnings = amount * 2
+            winnings = +amount
             outcome = "მოიგე"
         else:
             winnings = -amount
@@ -90,11 +90,12 @@ async def coin_flip(interaction, choice, amount):
             description=f"შენ {outcome} {abs(winnings)} ₾",
             color=0xbaff52 if outcome == "მოიგე" else 0xff0000
         )
-        embed.add_field(name="შენი ახალი ბალანსი", value=new_balance)
+        embed.set_footer(text=f"შენი ახალი ბალანსი: {new_balance} ₾")
 
         await interaction.response.send_message(embed=embed)
     else:
         embed = discord.Embed(title="შენ არ გაქვს საკმარისი ბალანსი ამ ოპერაციის შესასრულებლად.", color=0xff0000)
+        embed.set_footer(text=f"შენი ბალანსია: {new_balance} ₾")
         await interaction.response.send_message(embed=embed)
 
 
@@ -133,6 +134,7 @@ async def open_case(interaction, case_choice):
 
     if get_balance(user_id) < case_choices[case_choice_str]["cost"]:
         embed = discord.Embed(title="შენ არ გაქვს საკმარისი ბალანსი ამ ოპერაციის შესასრულებლად.", color=0xff0000)
+        embed.set_footer(text=f"შენი ბალანსია: {new_balance} ₾")
         await interaction.response.send_message(embed=embed)
         return
 
@@ -144,7 +146,7 @@ async def open_case(interaction, case_choice):
     weights = list(case_choices[case_choice_str]["items"].values())
 
     # shansebis gansazgvra
-    probability_positive = 0.35  # dadebiti values mqone itemis dagdebis shansi (1 == 100%)
+    probability_positive = 0.4  # dadebiti values mqone itemis dagdebis shansi (1 == 100%)
     probability_negative = 1 - probability_positive
 
     # weights cvlis shansebis mixedvit
