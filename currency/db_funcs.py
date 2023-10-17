@@ -20,7 +20,7 @@ def get_balance(user_id):
     if result:
         return result[0]
     else:
-        return 0
+        return "SHECDOMA!"
 
 def update_balance(user_id, new_balance):
     conn, cursor = create_connection()

@@ -4,7 +4,7 @@ from currency.db_funcs import *
 logger = logging.getLogger("commands")
 coloredlogs.install(level='DEBUG', fmt='%(asctime)s  |  %(message)s')
 
-file_path = 'E:\@programireba\dc botebi\__KURISUTINA.py\currency\\cases.json'
+file_path = 'currency\cases.json'
 
 with open(file_path, 'r', encoding='utf-8') as file:
     case_choices = json.load(file)

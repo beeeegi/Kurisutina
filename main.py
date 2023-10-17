@@ -285,6 +285,29 @@ async def cases_command(interaction):
     await best_logger_eune(interaction)
 
 
+@tree.command(name="lb", description="თესლების სია", guild=server)
+async def leaderboard(interaction):
+    conn, cursor = create_connection()
+    cursor.execute("SELECT user_id, balance FROM balances ORDER BY balance DESC LIMIT 10")
+    top_users = cursor.fetchall()
+    conn.close()
+
+    leaderboard_embed = discord.Embed(title="ლიდერბორდი", color=discord.Color.gold())
+
+    for idx, (user_id, balance) in enumerate(top_users, start=1):
+        user = await client.fetch_user(user_id)
+        if user:
+            leaderboard_embed.add_field(
+                name=f"{idx}. {user.display_name}",
+                value=f"ბალანსი: {balance} ₾",
+                inline=False,
+            )
+
+    await interaction.response.send_message(embed=leaderboard_embed)
+    await best_logger_eune(interaction)
+
+
+
 
 
 # @tree.command(name="daily", description="დღიური პრიზი", guild=server)
@@ -380,6 +403,7 @@ def create_game_embed(game,user_id=None):
 )
 async def bj_command(interaction, amount: int):
     user_id = interaction.user.id
+    await best_logger_eune(interaction)
 
     if amount <= 0:
         await interaction.response.send_message("Please bet a positive amount.")
